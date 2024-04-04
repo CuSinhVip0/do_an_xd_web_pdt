@@ -6,7 +6,15 @@ import { Providers } from "@/components/NextUiProviders";
 import { getServerSession } from "next-auth";
 import NextTopLoader from "nextjs-toploader";
 export const metadata = {
-    title: "Phòng Đào Tạo",
+    title: "Phòng đào tạo",
+    icons: {
+        icon: [
+            {
+                url: "/favicon_32x32.png", // /public path
+                href: "/favicon_32x32.png", // /public path
+            },
+        ],
+    },
 };
 export default async function RootLayout({ children }) {
     const session = await getServerSession();
