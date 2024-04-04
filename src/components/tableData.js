@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useLayoutEffect, useMemo } from "react";
+import React, { useState, useEffect, useLayoutEffect, useMemo, useId } from "react";
 import { useSession } from "next-auth/react";
 import removeAccents from "remove-accents";
 import { HOST } from "@/Data";
+import { Spinner } from "@nextui-org/react";
+import { ValidNumber } from "@/Utils";
 export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = false, userId = "" }) => {
     const [data, setData] = useState(props.data);
     const [Show, setShow] = useState([]);
@@ -10,9 +12,11 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
     const [listCheck, setListCheck] = useState([]);
     const [dataEdit, setDataEdit] = useState([]);
     const { data: session } = useSession();
-    const [dataUpdate, setDataUpdate] = useState([]);
+    const [dataUpdate, setDataUpdate] = useState();
     const [edit, setEdit] = useState(false);
     const [editId, setEditId] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [dataOld, setDataOld] = useState();
     const setListCheckf = (a) => {
         return setListCheck(a);
     };
@@ -26,93 +30,109 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
         const end = start + props.step;
         setShow(data.slice(start, end));
     }, [index]);
-    console.log("dataEdit", dataEdit);
-    console.log("listCheck", listCheck);
     const handleSave = async () => {
-        const res = await fetch(`${HOST}/comfirm-subject-result`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session.user.name}`,
-            },
-            body: JSON.stringify(
-                dataEdit.map((item) => {
-                    return {
-                        studentCode: item.studentCode,
-                        subjectCode: item.subjectCode,
-                        semester: item.semester,
-                        year: item.year,
-                        comfirm: true,
-                    };
-                })
-            ),
-        }).then((res) => res.json());
-        if (res.message == "Update score success") {
-            setData(
-                data.filter(
-                    (item) =>
-                        `${item.subjectCode}-${item.studentCode}-${item.semester}-${item.year}` !==
-                        listCheck.find(
-                            (itm) => itm === `${item.subjectCode}-${item.studentCode}-${item.semester}-${item.year}`
-                        )
-                )
-            );
-            setListCheck([]);
-            setDataEdit([]);
-            return;
-        } else {
-            alert("Update score fail");
+        setLoading(true);
+        try {
+            const res = await fetch(`${HOST}/comfirm-subject-result`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${session.user.name}`,
+                },
+                body: JSON.stringify(
+                    dataEdit.map((item) => {
+                        return {
+                            studentCode: item.studentCode,
+                            subjectCode: item.subjectCode,
+                            semester: item.semester,
+                            year: item.year,
+                            comfirm: true,
+                        };
+                    })
+                ),
+            }).then((res) => res.json());
+            if (res.message == "Update score success") {
+                setData(
+                    data.filter(
+                        (item) =>
+                            `${item.subjectCode}-${item.studentCode}-${item.semester}-${item.year}` !==
+                            listCheck.find(
+                                (itm) => itm === `${item.subjectCode}-${item.studentCode}-${item.semester}-${item.year}`
+                            )
+                    )
+                );
+                setListCheck([]);
+                setDataEdit([]);
+                setLoading(false);
+                return;
+            } else {
+                alert("Update score fail");
+                setLoading(false);
+                return;
+            }
+        } catch (error) {
+            alert("Xảy ra lỗi, liên hệ NGuyễn Khắc thể để fix bug !!!");
+            setLoading(false);
         }
     };
 
     const handleUpdate = async () => {
-        const res = await fetch(`${HOST}/api/training-room/update`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session.user.name}`,
-            },
-            body: JSON.stringify({
-                StudentCode: props.userId,
-                SubjectCode: dataUpdate.mamonhoc,
-                Year: dataUpdate.nam,
-                Semester: dataUpdate.hocki,
-                ProcessPercent: dataUpdate.ptramquatrinh,
-                MidtermPercent: dataUpdate.ptramgiuaki,
-                FinalPercent: dataUpdate.ptramcuoiki,
-                ProcessScore: dataUpdate.diemquatrinh,
-                MidtermScore: dataUpdate.diemgiuaki,
-                FinalScore: dataUpdate.diemcuoiki,
-            }),
-        }).then((res) => res.json());
-        if (res.message == "Cập nhật thành công.") {
-            alert("Cập nhật điểm thành công");
-            setData(
-                data.map((item) => {
-                    if (
-                        `${item.mamonhoc}-${props.userId}-${item.hocki}-${item.nam}` ===
-                        `${dataUpdate.mamonhoc}-${props.userId}-${dataUpdate.hocki}-${dataUpdate.nam}`
-                    ) {
-                        return {
-                            ...item,
-                            diemcuoiki: dataUpdate.diemcuoiki,
-                            diemgiuaki: dataUpdate.diemgiuaki,
-                            diemquatrinh: dataUpdate.diemquatrinh,
-                        };
-                    } else {
-                        return item;
-                    }
-                })
-            );
-            setEdit(false);
-            setEditId();
-            setDataUpdate();
-            return;
-        } else {
-            alert("Cập nhật điểm không thành công");
-            return;
+        setLoading(true);
+        try {
+            const res = await fetch(`${HOST}/api/training-room/update`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${session.user.name}`,
+                },
+                body: JSON.stringify({
+                    StudentCode: props.userId,
+                    SubjectCode: dataUpdate.mamonhoc,
+                    Year: dataUpdate.nam,
+                    Semester: dataUpdate.hocki,
+                    ProcessPercent: dataUpdate.ptramquatrinh,
+                    MidtermPercent: dataUpdate.ptramgiuaki,
+                    FinalPercent: dataUpdate.ptramcuoiki,
+                    ProcessScore: dataUpdate.diemquatrinh,
+                    MidtermScore: dataUpdate.diemgiuaki,
+                    FinalScore: dataUpdate.diemcuoiki,
+                }),
+            }).then((res) => res.json());
+            if (res.message == "Cập nhật thành công.") {
+                alert("Cập nhật điểm thành công");
+                setData(
+                    data.map((item) => {
+                        if (
+                            `${item.mamonhoc}-${props.userId}-${item.hocki}-${item.nam}` ===
+                            `${dataUpdate.mamonhoc}-${props.userId}-${dataUpdate.hocki}-${dataUpdate.nam}`
+                        ) {
+                            return {
+                                ...item,
+                                diemcuoiki: dataUpdate.diemcuoiki,
+                                diemgiuaki: dataUpdate.diemgiuaki,
+                                diemquatrinh: dataUpdate.diemquatrinh,
+                            };
+                        } else {
+                            return item;
+                        }
+                    })
+                );
+                setEdit(false);
+                setEditId();
+                setDataUpdate();
+                setLoading(false);
+                return;
+            } else {
+                alert("Cập nhật điểm không thành công");
+                setLoading(false);
+                return;
+            }
+        } catch (error) {
+            alert("Xảy ra lỗi, liên hệ NGuyễn Khắc thể để fix bug !!!");
+            setLoading(false);
         }
     };
+
     return (
         <div className="relative table table-fixed border-collapse border w-full mt-2  bg-white table-auto ">
             <div className="table-header-group box-border ">
@@ -250,7 +270,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                                     </div>
                                 )}
 
-                                {Object.keys(props.titledata).map((item) => {
+                                {Object.keys(props.titledata).map((item, i) => {
                                     const x = Object.entries(value).find((i) => i[0].trim() == item.trim());
                                     return (
                                         <div
@@ -258,7 +278,8 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                                             className="table-cell  py-4 text-center  border  cursor-pointer "
                                         >
                                             <div
-                                                key={x[0]}
+                                                key={i}
+                                                id={`${value.mamonhoc}-${props.userId}-${value.hocki}-${value.nam}-${x[0]}`}
                                                 className="block "
                                                 contentEditable={
                                                     edit &&
@@ -267,6 +288,30 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                                                         item == "diemcuoiki") &&
                                                     index == editId
                                                 }
+                                                onInput={(e) => {
+                                                    if (ValidNumber(e.target.innerText) == "form-error") {
+                                                        alert("Không được nhập chữ !!!");
+                                                        e.target.innerText = "";
+                                                        setDataUpdate({
+                                                            ...dataUpdate,
+                                                            [x[0]]: "",
+                                                        });
+                                                    } else {
+                                                        if (e.target.innerText <= 10 && e.target.innerText >= 0) {
+                                                            setDataUpdate({
+                                                                ...dataUpdate,
+                                                                [x[0]]: e.target.innerText,
+                                                            });
+                                                        } else {
+                                                            alert("Không điểm sai!!!");
+                                                            e.target.innerText = "";
+                                                            setDataUpdate({
+                                                                ...dataUpdate,
+                                                                [x[0]]: "",
+                                                            });
+                                                        }
+                                                    }
+                                                }}
                                                 onBlur={(e) => {
                                                     setDataUpdate({ ...dataUpdate, [x[0]]: e.target.innerText });
                                                 }}
@@ -288,9 +333,21 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                                     <div className="table-cell py-4 w-full   border  text-center font-bold ">
                                         <button
                                             onClick={() => {
+                                                if (dataOld != undefined || dataOld != null) {
+                                                    document.getElementById(
+                                                        `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemquatrinh`
+                                                    ).innerText = dataOld.diemquatrinh;
+                                                    document.getElementById(
+                                                        `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemgiuaki`
+                                                    ).innerText = dataOld.diemgiuaki;
+                                                    document.getElementById(
+                                                        `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemcuoiki`
+                                                    ).innerText = dataOld.diemcuoiki;
+                                                }
                                                 setEdit(true);
                                                 setEditId(index);
                                                 setDataUpdate(value);
+                                                setDataOld(value);
                                             }}
                                             className={`px-2 ${edit && index == editId && "hidden"}`}
                                         >
@@ -301,13 +358,19 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                                                 setEdit(false);
                                                 setEditId();
                                                 setDataUpdate();
+                                                setDataOld();
                                             }}
                                             className={`px-2 ${!(edit && index == editId) && "hidden"}`}
                                         >
                                             X
                                         </button>
-                                        <button onClick={handleUpdate} className="px-2">
-                                            Save
+                                        <button
+                                            onClick={!(edit && index == editId) ? null : handleUpdate}
+                                            className={`px-2 ${
+                                                !(edit && index == editId) && "text-gray-300 cursor-not-allowed"
+                                            }`}
+                                        >
+                                            {edit && index == editId && loading ? <Spinner size="sm" /> : "Save"}
                                         </button>
                                     </div>
                                 )}
@@ -341,7 +404,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
             </div>
             {props.hasSave && (
                 <div className="absolute bottom-full right-0 px-3 py-2 bg-slate-300 mb-2">
-                    <button onClick={handleSave}> Xác nhận </button>
+                    <button onClick={handleSave}> {loading ? <Spinner size="sm" /> : "Xác nhận"} </button>
                 </div>
             )}
         </div>

@@ -1,22 +1,23 @@
-"use client"
+"use client";
 
-import { useRef, useState, useEffect } from "react"
-import { signIn, useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { Spinner } from "@nextui-org/react"
+import { useRef, useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Spinner } from "@nextui-org/react";
+import { Alerterror } from "@/Utils";
 function Login() {
-    const { data: session } = useSession()
-    const [loading, setLoading] = useState(false)
-    const router = useRouter()
-    const username = useRef()
-    const password2 = useRef()
-    const [submit, setSubmit] = useState(false)
-    const [submit2, setSubmit2] = useState(false)
-    const [dataUser, setDataUser] = useState()
-    const [dataPass, setDataPass] = useState()
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    const username = useRef();
+    const password2 = useRef();
+    const [submit, setSubmit] = useState(false);
+    const [submit2, setSubmit2] = useState(false);
+    const [dataUser, setDataUser] = useState();
+    const [dataPass, setDataPass] = useState();
+    const [valid, setValid] = useState(false);
     const handleSub = async (e) => {
-        e.preventDefault()
-        setLoading(true)
+        e.preventDefault();
+        setLoading(true);
         try {
             const data = await signIn("credentials", {
                 dataUser,
@@ -24,64 +25,59 @@ function Login() {
                 submit,
                 submit2,
                 redirect: false,
-            })
+            });
             if (data.error) {
-                setLoading(false)
-                return
+                setLoading(false);
+                alert("Sai Tài khoản hay mật khẩu gì đó !!!");
+                return;
             } else {
-                router.replace("/dashboard")
+                router.replace("/dashboard");
             }
         } catch (error) {
-            console.log(error)
+            Alerterror("Xãy ra lỗi, liên hệ Nguyễn Khắc Thế để fix lỗi !!!");
         }
-    }
+    };
     function handleFocus(e, ref) {
-        ref.current.innerText = ""
-        e.target.className = e.target.className.replace(" unvalid", "")
+        ref.current.innerText = "";
+        e.target.className = e.target.className.replace(" unvalid", "");
     }
     function handleCheck(e, ref = null) {
-        const value = e.value
+        const value = e.value;
         //không có data
         if (!value) {
-            ref.current.innerText = "Vui lòng nhập đủ thông tin"
-            return false
+            ref.current.innerText = "Vui lòng nhập đủ thông tin";
+            return false;
         }
         //có data
         else {
-            ref.current.innerText = ""
+            ref.current.innerText = "";
             switch (e.name) {
                 //username :Kí tự đầu tiên là chữ và độ dài lớn hơn 4
                 case "username":
                     if (
                         !(
                             e.value.length >= 4 &&
-                            ((e.value.charCodeAt(0) >= 65 &&
-                                e.value.charCodeAt(0) <= 90) ||
-                                (e.value.charCodeAt(0) >= 97 &&
-                                    e.value.charCodeAt(0) <= 122))
+                            ((e.value.charCodeAt(0) >= 65 && e.value.charCodeAt(0) <= 90) ||
+                                (e.value.charCodeAt(0) >= 97 && e.value.charCodeAt(0) <= 122))
                         )
                     ) {
-                        if (!e.className.includes("unvalid"))
-                            e.className += " unvalid"
-                        ref.current.innerText =
-                            "Tài khoản không hợp lệ! Vui lòng nhập lại"
-                        return false
+                        if (!e.className.includes("unvalid")) e.className += " unvalid";
+                        ref.current.innerText = "Tài khoản không hợp lệ! Vui lòng nhập lại";
+                        return false;
                     }
-                    return true
+                    return true;
 
                 //password: Kí tự đầu tiên là chữ và viết hoa và độ dài lớn hơn 6
                 case "password":
                     if (!(e.value.length >= 4)) {
-                        if (!e.className.includes("unvalid"))
-                            e.className += " unvalid"
-                        ref.current.innerText =
-                            "Mật khẩu không hợp lệ! Vui lòng nhập lại"
-                        return false
+                        if (!e.className.includes("unvalid")) e.className += " unvalid";
+                        ref.current.innerText = "Mật khẩu không hợp lệ! Vui lòng nhập lại";
+                        return false;
                     }
-                    return true
+                    return true;
 
                 default:
-                    return false
+                    return false;
             }
         }
     }
@@ -90,63 +86,47 @@ function Login() {
             <div className="bg-white flex justify-center items-center rounded-xl">
                 <div className="px-5 py-8 flex items-center justify-center flex-col">
                     <div className="font-extrabold text-3xl text-black align-center mb-10">
-                        Đăng nhập cho  Phòng đào tạo
+                        Đăng nhập cho Phòng đào tạo
                     </div>
-                    <div
-                    // action={() =>
-                    //     handleSubmit({
-                    //         submit,
-                    //         submit2,
-                    //         dataUser,
-                    //         dataPass,
-                    //     })
-                    // }
-                    // action={handleSub}
-                    >
+                    <div>
                         <input
                             type="text"
                             className="w-[360px] p-3 border-2 border-solid border-black outline-none rounded box-border  text-sm tracking-wide block"
                             name="username"
                             placeholder="Tài khoản"
-                            onChange={(e) => setDataUser(e.target.value)}
+                            onChange={(e) => {
+                                setDataUser(e.target.value);
+                                handleCheck(e.target, username) ? setSubmit(true) : setSubmit(false);
+                            }}
                             onFocus={(e) => handleFocus(e, username)}
-                            onBlur={(e) =>
-                                handleCheck(e.target, username)
-                                    ? setSubmit(true)
-                                    : setSubmit(false)
-                            }
+                            onBlur={(e) => (handleCheck(e.target, username) ? setSubmit(true) : setSubmit(false))}
                         />
-                        <p
-                            className="mx-2 align-left text-sm h-[20px] text-red-500"
-                            ref={username}
-                        ></p>
+                        <p className="mx-2 align-left text-sm h-[20px] text-red-500" ref={username}></p>
                         <input
                             type="password"
                             className="w-[360px] p-3 border-2 border-solid border-black outline-none rounded box-border  text-sm tracking-wide block"
                             name="password"
                             placeholder="Mật khẩu"
-                            onChange={(e) => setDataPass(e.target.value)}
+                            onChange={(e) => {
+                                setDataPass(e.target.value);
+                                handleCheck(e.target, password2) ? setSubmit2(true) : setSubmit2(false);
+                            }}
                             onFocus={(e) => handleFocus(e, password2)}
-                            onBlur={(e) =>
-                                handleCheck(e.target, password2)
-                                    ? setSubmit2(true)
-                                    : setSubmit2(false)
-                            }
+                            onBlur={(e) => (handleCheck(e.target, password2) ? setSubmit2(true) : setSubmit2(false))}
                         />
-                        <p
-                            className="mx-2 align-left text-sm h-[20px] text-red-500"
-                            ref={password2}
-                        ></p>
+                        <p className="mx-2 align-left text-sm h-[20px] text-red-500" ref={password2}></p>
                         <div
                             className={`w-[360px] h-12  text-center flex justify-center items-center  outline-none rounded   tracking-wide   ${
-                                !loading ? "bg-black" : "bg-gray-300"
+                                submit && submit2 ? (loading ? "bg-gray-300" : "bg-black") : "bg-gray-300"
                             }  text-white font-bold text-lg`}
                             onClick={
-                                loading
-                                    ? null
-                                    : (e) => {
-                                          handleSub(e)
-                                      }
+                                submit && submit2
+                                    ? loading
+                                        ? null
+                                        : (e) => {
+                                              handleSub(e);
+                                          }
+                                    : null
                             }
                         >
                             {loading ? <Spinner size="sm" /> : "Đăng nhập"}
@@ -155,7 +135,7 @@ function Login() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default Login
+export default Login;

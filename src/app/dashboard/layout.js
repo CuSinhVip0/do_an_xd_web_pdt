@@ -1,18 +1,18 @@
-"use client"
-import { NotificationContainer } from "react-notifications"
-import AdminHeader from "@/components/header_admin"
-import NavAdmin from "@/components/nav_admin"
-import { handleHideShowNav } from "@/Utils"
-import { MdArrowForwardIos } from "react-icons/md"
+"use client";
+import { NotificationContainer } from "react-notifications";
+import AdminHeader from "@/components/header_admin";
+import NavAdmin from "@/components/nav_admin";
+import { handleHideShowNav } from "@/Utils";
+import { MdArrowForwardIos } from "react-icons/md";
 export default function DashboardLayout({ children }) {
     return (
         <>
-            <main className="min-h-screen ">
+            <main className="min-h-screen box-border ">
                 <AdminHeader />
-                <div className="pt-[90px] max-w-[1320px] mx-auto  ">
-                    <div id="container" className="grid  grid-cols-12  ">
+                <div className="pt-[90px] max-w-[1320px] mx-auto ">
+                    <div id="container" className="grid  grid-cols-12 ">
                         <NavAdmin />
-                        <div className="col-span-10">
+                        <div className="col-span-10 h-full">
                             <button
                                 id="btn"
                                 onClick={handleHideShowNav}
@@ -28,5 +28,5 @@ export default function DashboardLayout({ children }) {
             </main>
             <NotificationContainer />
         </>
-    )
+    );
 }

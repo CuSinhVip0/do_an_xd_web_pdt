@@ -1,17 +1,13 @@
-"use client"
-
+"use client";
 
 function DashBoard() {
     return (
         <>
-            <div className="min-h-full">
-                <p className="text-base font-bold text-[#6e7377]">
-                    HỌC KÌ II NĂM HỌC 2023-2024
-                </p>
+            <div className="min-h-full  flex items-center justify-center">
+                <p className=" font-bold text-[#6e7377] text-xl">HỌC KÌ II NĂM HỌC 2023-2024</p>
             </div>
-            
         </>
-    )
+    );
 }
 
-export default DashBoard
+export default DashBoard;
