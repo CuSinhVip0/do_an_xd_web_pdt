@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Spinner } from "@nextui-org/react";
 import { Alerterror } from "@/Utils";
 function Login() {
+    const { data: session } = useSession();
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const username = useRef();
@@ -14,7 +15,12 @@ function Login() {
     const [submit2, setSubmit2] = useState(false);
     const [dataUser, setDataUser] = useState();
     const [dataPass, setDataPass] = useState();
-    const [valid, setValid] = useState(false);
+    useEffect(() => {
+        if (session) {
+            router.replace("/dashboard");
+        }
+    }, []);
+
     const handleSub = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -34,7 +40,7 @@ function Login() {
                 router.replace("/dashboard");
             }
         } catch (error) {
-            Alerterror("Xãy ra lỗi, liên hệ Nguyễn Khắc Thế để fix lỗi !!!");
+            alert("Xãy ra lỗi, liên hệ Nguyễn Khắc Thế để fix lỗi !!!");
         }
     };
     function handleFocus(e, ref) {

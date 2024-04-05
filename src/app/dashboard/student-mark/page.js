@@ -8,7 +8,7 @@ import { Spinner } from "@nextui-org/react";
 
 export default function StudentMark() {
     const [data, setData] = useState({});
-    const [search, setSearch] = useState("DH19771230");
+    const [search, setSearch] = useState();
     const { data: session } = useSession();
     const [loading, setLoading] = useState(false);
     const handleSearch = async () => {

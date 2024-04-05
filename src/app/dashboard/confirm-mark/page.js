@@ -27,7 +27,7 @@ function AddMark() {
             };
             responce();
         } catch (err) {
-            alert("Xảy ra lỗi, liên hệ NGuyễn Khắc thể để fix bug !!!");
+            alert("Xảy ra lỗi, liên hệ Nguyễn Khắc thể để fix bug !!!");
             setLoading(false);
         }
     }, []);

@@ -62,6 +62,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                     )
                 );
                 setListCheck([]);
+                alert("Update score success");
                 setDataEdit([]);
                 setLoading(false);
                 return;
@@ -119,6 +120,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                 );
                 setEdit(false);
                 setEditId();
+                alert("Cập nhật điểm thành công");
                 setDataUpdate();
                 setLoading(false);
                 return;
@@ -173,7 +175,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                 </div>
 
                 <div className="table-row box-border w-full">
-                    {props.hasCheck && <div className="table-cell py-4  box-border border text-center  w-full"></div>}
+                    {props.hasCheck && <div className="table-cell py-2  box-border border text-center  w-full"></div>}
                     {Object.keys(props.titledata).map((value, index) => {
                         return (
                             (value === "subject" ||
@@ -188,7 +190,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                                 value == "mamonhoc" ||
                                 value == "tenmonhoc" ||
                                 value == "fullName") && (
-                                <div key={index} className="table-cell py-4  box-border border text-center  w-full">
+                                <div key={index} className="table-cell py-2  box-border border text-center  w-full">
                                     <div className="w-full px-2">
                                         <input
                                             onChange={(e) => {
@@ -380,7 +382,24 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
             </div>
             <div className="absolute top-full right-0  mt-2 flex gap-4">
                 <button
-                    onClick={() => setIndex(index * props.step - props.step == 0 ? index : index - 1)}
+                    onClick={() => {
+                        if (dataOld != undefined || dataOld != null) {
+                            document.getElementById(
+                                `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemquatrinh`
+                            ).innerText = dataOld.diemquatrinh;
+                            document.getElementById(
+                                `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemgiuaki`
+                            ).innerText = dataOld.diemgiuaki;
+                            document.getElementById(
+                                `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemcuoiki`
+                            ).innerText = dataOld.diemcuoiki;
+                        }
+                        setEdit(false);
+                        setEditId();
+                        setDataUpdate();
+                        setDataOld();
+                        setIndex(index * props.step - props.step == 0 ? index : index - 1);
+                    }}
                     id="btnNext"
                     className={` px-3 py-2 ${
                         !(index * props.step - props.step == 0)
@@ -391,7 +410,24 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                     Back
                 </button>
                 <button
-                    onClick={() => setIndex(index * props.step < lengthShow ? index + 1 : index)}
+                    onClick={() => {
+                        if (dataOld != undefined || dataOld != null) {
+                            document.getElementById(
+                                `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemquatrinh`
+                            ).innerText = dataOld.diemquatrinh;
+                            document.getElementById(
+                                `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemgiuaki`
+                            ).innerText = dataOld.diemgiuaki;
+                            document.getElementById(
+                                `${dataOld.mamonhoc}-${props.userId}-${dataOld.hocki}-${dataOld.nam}-diemcuoiki`
+                            ).innerText = dataOld.diemcuoiki;
+                        }
+                        setEdit(false);
+                        setEditId();
+                        setDataUpdate();
+                        setDataOld();
+                        setIndex(index * props.step < lengthShow ? index + 1 : index);
+                    }}
                     id="btnNext"
                     className={` px-3 py-2 ${
                         index * props.step < lengthShow
