@@ -32,7 +32,7 @@ export default function StudentMark() {
             setData(res);
             setLoading(false);
         } catch (error) {
-            alert("Xảy ra lỗi, liên hệ NGuyễn Khắc thể để fix bug !!!");
+            alert("Xảy ra lỗi, liên hệ Nguyễn Khắc Thế để fix bug !!!");
             setLoading(false);
         }
     };
@@ -54,9 +54,15 @@ export default function StudentMark() {
                     {loading && <Spinner color="primary" size="md" />}
                 </div>
             </div>
-            {data !== undefined && data.data && data.data.length > 0 && (
+            {data !== undefined && data.masinhvien && data.tensinhvien && (
+                <div className="w-full mx-auto flex justify-center flex-col items-center mb-6">
+                    <p>Sinh viên: {data.tensinhvien}</p>
+                    <p>MSSV: {data.masinhvien}</p>
+                </div>
+            )}
+            {data !== undefined && data.data && data.data.length > 0 ? (
                 <Table
-                    key={Math.random()}
+                    key={1}
                     titledata={{
                         mamonhoc: "Mã môn học",
                         tenmonhoc: "Tên môn học",
@@ -74,6 +80,8 @@ export default function StudentMark() {
                     step={5}
                     hasEdit={true}
                 />
+            ) : (
+                <p className="text-center">Chưa có điểm</p>
             )}
         </div>
     );

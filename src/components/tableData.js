@@ -21,6 +21,9 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
         return setListCheck(a);
     };
     useEffect(() => {
+        setData(props.data);
+    }, [props.data]);
+    useEffect(() => {
         setShow(data.slice(0, props.step));
         setIndex(1);
         setLengthShow(data.length);
@@ -62,17 +65,19 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                     )
                 );
                 setListCheck([]);
-                alert("Update score success");
+                alert("Cập nhật điểm thành công");
+
                 setDataEdit([]);
                 setLoading(false);
                 return;
             } else {
-                alert("Update score fail");
+                alert("Cập nhật điểm không thành công");
+
                 setLoading(false);
                 return;
             }
         } catch (error) {
-            alert("Xảy ra lỗi, liên hệ NGuyễn Khắc thể để fix bug !!!");
+            alert("Xảy ra lỗi, liên hệ Nguyễn Khắc Thế để fix bug !!!");
             setLoading(false);
         }
     };
@@ -130,7 +135,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                 return;
             }
         } catch (error) {
-            alert("Xảy ra lỗi, liên hệ NGuyễn Khắc thể để fix bug !!!");
+            alert("Xảy ra lỗi, liên hệ Nguyễn Khắc Thể để fix bug !!!");
             setLoading(false);
         }
     };
@@ -305,7 +310,7 @@ export const Table = (props, { hasEdit = false, hasCheck = false, hasSave = fals
                                                                 [x[0]]: e.target.innerText,
                                                             });
                                                         } else {
-                                                            alert("Không điểm sai!!!");
+                                                            alert("Không đúng khoảng điểm!!!");
                                                             e.target.innerText = "";
                                                             setDataUpdate({
                                                                 ...dataUpdate,
