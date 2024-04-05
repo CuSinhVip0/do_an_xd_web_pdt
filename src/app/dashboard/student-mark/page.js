@@ -58,9 +58,10 @@ export default function StudentMark() {
                 <div className="w-full mx-auto flex justify-center flex-col items-center mb-6">
                     <p>Sinh viên: {data.tensinhvien}</p>
                     <p>MSSV: {data.masinhvien}</p>
+                    {data.data.length == 0 && <p> Chưa có điểm</p>}
                 </div>
             )}
-            {data !== undefined && data.data && data.data.length > 0 ? (
+            {data !== undefined && data.data && data.data.length > 0 && (
                 <Table
                     key={1}
                     titledata={{
@@ -80,8 +81,6 @@ export default function StudentMark() {
                     step={5}
                     hasEdit={true}
                 />
-            ) : (
-                <p className="text-center">Chưa có điểm</p>
             )}
         </div>
     );
