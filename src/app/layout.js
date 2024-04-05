@@ -20,7 +20,7 @@ export default async function RootLayout({ children }) {
     const session = await getServerSession();
     return (
         <html lang="en">
-            <body>
+            <body className="overflow-y-scroll">
                 <NextTopLoader
                     color="#2299DD"
                     initialPosition={0.08}
